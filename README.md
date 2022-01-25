@@ -16,8 +16,7 @@ Once the feeder was ready, I decided to add a new feature to the scenario, detec
 - How to export the model to a ML.Net image format.
 - How to run the model in an Azure Function.
 
-UPDATE
-[<img src="img/UPDATE" width="250"/>](squirrel_detected.jpg)
+[<img src="img/testmodel.jpg" width="350"/>](testmodel.jpg)
 
 ## Azure Machine Learning
 
@@ -25,10 +24,21 @@ UPDATE
 
 You can create a model in Azure Machine Learning or use a model built from an open-source platform, such as Pytorch, TensorFlow, or scikit-learn. MLOps tools help you monitor, retrain, and redeploy models.
 
-You can use the images in the "[AzureML/Train/](AzureML/Train/)" directory in this repository to train your model.
+## ML.NET
 
-<img src="img/AzureMLDataSetForTraining.jpg" width="450"/>
+ML.NET gives you the ability to add machine learning to .NET applications, in either online or offline scenarios. With this capability, you can make automatic predictions using the data available to your application. Machine learning applications make use of patterns in the data to make predictions rather than needing to be explicitly programmed.
 
+Central to ML.NET is a machine learning model. The model specifies the steps needed to transform your input data into a prediction. With ML.NET, you can train a custom model by specifying an algorithm, or you can import pre-trained TensorFlow and ONNX models.
+
+Once you have a model, you can add it to your application to make the predictions.
+
+ML.NET runs on Windows, Linux, and macOS using .NET Core, or Windows using .NET Framework. 64 bit is supported on all platforms. 32 bit is supported on Windows, except for TensorFlow, LightGBM, and ONNX-related functionality.
+
+For this scenario we will use ML.Net to create an image recognition model. This model will be trained on a dataset of images of squirrels 🐿️. The Tutorial - [Train an image classification model in Azure using Model Builder](https://docs.microsoft.com/dotnet/machine-learning/tutorials/image-classification-model-builder) describes the necesary steps to create a model.
+
+Once you select the **Image Classification** scenario, you can use the images in the "[AzureML/Train/](AzureML/Train/)" directory in this repository to train your model.
+
+<img src="img/mlnettrainingdata.jpg" width="450"/>
 
 Here is the model performing live recognition in action: 
 
@@ -39,13 +49,13 @@ Here is the model performing live recognition in action:
 
 Once the project  was trained, you can export it to several formats. 
 
-<img src="img/LobeExportModel.jpg" width="450"/>
+**Work In Progress**
+<img src="img/UPDATE.jpg" width="450"/>
 
 
 ## Azure Function
 
 Time to code! Let's create a new Azure Function Using [Visual Studio Code](https://code.visualstudio.com/) and the [Azure Functions for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) extension. 
-
 
 
 ### Sample Code
@@ -97,11 +107,16 @@ These links will help to understand specific implementations of the sample code:
 - [Microsoft Learn - Microsoft Azure AI Fundamentals: Explore visual tools for machine learning](https://aka.ms/VisualToolsforML-ci)
 lobe-export)
 - [Microsoft Learn - Build and operate machine learning solutions with Azure Machine Learning](https://aka.ms/OperateMLSolutions-ci)
+- [Microsoft Docs - What is ML.NET and how does it work?](https://docs.microsoft.com/dotnet/machine-learning/how-does-mldotnet-work)
+- [Microsoft Docs - Train an image classification model in Azure using Model Builder](https://docs.microsoft.com/dotnet/machine-learning/tutorials/image-classification-model-builder)
 - [Microsoft Learn - Create serverless applications](https://aka.ms/CreateServerlessApps-ci)
 - [Microsoft Docs - AZ-204: Implement Azure Functions](https://aka.ms/AzureFunctions-ci)
 - [Microsoft Learn - Connect your services together](https://aka.ms/ConnectServicesTogether-ci)
 
 In my personal blog "[ElBruno.com](https://elbruno.com)", I wrote about several scenarios on how to work and code with [LOBE](https://elbruno.com/tag/lobe/). 
+
+- [How to create a dataset with images to be used on the AzureML Designer using the DenseNet template](https://elbruno.com/2022/01/24/azureml-how-to-create-a-dataset-with-images-to-be-used-on-the-azureml-designer-densenet-samples/)
+- [Using a custom images 🖼️ dataset on the AzureML Designer using the DenseNet template 🎨](https://elbruno.com/2022/01/25/azureml-using-a-custo-images-%f0%9f%96%bc%ef%b8%8f-dataset-on-the-azureml-designer-densenet-template-%f0%9f%8e%a8/)
 
 ## Author
 
