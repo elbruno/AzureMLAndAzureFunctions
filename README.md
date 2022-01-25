@@ -77,6 +77,136 @@ var result = MlnetSquirrels.Predict(sampleData);
 
 Time to code! Let's create a new Azure Function Using [Visual Studio Code](https://code.visualstudio.com/) and the [Azure Functions for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) extension. For this specific scenario we will create a C# function that will run the model and return the result.
 
+Inside the Azure Function folder, let's copy the generated model files:
+- `mlnetSquirrels.zip`. This file represents the generated model.
+- `mlnetSquirrels.consumption.cs`. This file include classes to work with the model. Including Model Input, Model Output, and Model Predictor.
+
+**Note:** `mlnetSquirrels.training.cs` and `mlnetSquirrels.mbconfig` files are not necessary.
+
+
+### Changes to `Function1.cs`
+The following code is the final code for the generated `Function1.cs` file in the Azure Function. 
+A couple of notes:
+
+- The function will receive a POST request with the file bytes in the body.
+- The function will return a JSON object with the prediction result.
+- The function will process the BODY content as an byte array and will use the Model Input class to create a Model Input object.
+- The function will use the Model Predictor class to make the prediction.
+
+
+```csharp
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+
+namespace FunctionsCsNet6
+{
+    public static class AzAzureML21
+    {
+        [FunctionName("AzAzureML21")]
+        public static async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            log.LogInformation("C# HTTP trigger function processed a request.");
+
+            var predictionResult = new MlnetSquirrels.ModelOutput();
+            predictionResult.Label = 0;
+            predictionResult.PredictedLabel = "not processed";
+            predictionResult.ImageSource = null;
+            predictionResult.Score = new float[2];
+            predictionResult.Score[0] = 0;
+            predictionResult.Score[1] = 0;
+
+            try
+            {
+
+                log.LogInformation($"ML.NET model loaded from {MlnetSquirrels.GetModelPath()}");
+
+                using var imageInStream = new MemoryStream();
+                req.Body.CopyTo(imageInStream);
+
+                // var imageBytes = File.ReadAllBytes(imagePath);
+                var imageBytes = imageInStream.ToArray();
+                var sampleData = new MlnetSquirrels.ModelInput()
+                {
+                    ImageSource = imageBytes,
+                };
+                // Make a single prediction on the sample data and print results
+                predictionResult = MlnetSquirrels.Predict(sampleData);
+                var logData = $"\n\nPredicted Label value: {predictionResult.PredictedLabel} \nPredicted Label scores: [{string.Join(",", predictionResult.Score)}]\n\n";
+                log.LogInformation(logData);
+
+                predictionResult.ImageSource = null;
+            }
+            catch (Exception ex)
+            {
+                var message = $"Exc: " + ex.Message;
+                predictionResult.PredictedLabel = message;
+            }
+
+            var result = JsonConvert.SerializeObject(predictionResult, Formatting.Indented);
+
+            return new OkObjectResult(result);
+        }
+    }
+} 
+```
+
+### Changes to `mlnetSquirrels.consumption.cs`
+The following code is the final code for the `mlnetSquirrels.consumption.cs` file in the Azure Function. This is necesary to load the model in non-Windows environments.
+
+```csharp
+public static string GetModelPath()
+{
+    var modelName = "mlnetSquirrels.zip";
+    string currentAssemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+    var modelPath = Path.Combine(currentAssemblyPath, modelName);
+
+    // check if model exists
+    if (!File.Exists(modelPath))
+    {
+        // get parent directory from current assembly path
+        var parentDirectory = Directory.GetParent(currentAssemblyPath).ToString();                               
+        modelPath = Path.Combine(parentDirectory, modelName);
+    }
+
+    Console.WriteLine($"Model path: {modelPath}");
+
+    return modelPath;
+}
+
+private static PredictionEngine<ModelInput, ModelOutput> CreatePredictEngine()
+{
+    var mlContext = new MLContext();
+    var modelPath = GetModelPath();
+    ITransformer mlModel = mlContext.Model.Load(modelPath, out var _);
+    return mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
+} 
+```
+
+### Changes to `AzureFunctionProject.csproj`
+The project will require the following NuGet packages:
+
+- Microsoft.ML
+- Microsoft.ML.Vision" Version
+- Microsoft.NET.Sdk.Functions
+- SciSharp.TensorFlow.Redist
+
+The following code describes the packages and current versions in the CSProj file:
+
+```xml
+<PackageReference Include="Microsoft.ML" Version="1.7.0" />
+<PackageReference Include="Microsoft.ML.Vision" Version="1.7.0" />
+<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.0.1" />
+<PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.3.1" />
+```
 
 ### Sample Code
 
@@ -92,9 +222,10 @@ Once our code is complete we can test the sample in local mode or in Azure Funct
 Curl is a command line tool that allows you to send HTTP requests to a server. It is a very simple tool that can be used to send HTTP requests to a server. We can test the local function using curl with the following command:
 
 ```bash
-❯ curl http://localhost:7071/api/LobeSquirrelDetectorFunction -Method 'Post' -InFile 01.jpg
+❯ curl http://localhost:7071/api/AzAzureMLReactor -Method 'Post' -InFile <test_file.jpg>
 ```
 
+<img src="img/curltestdone.jpg" width="450"/>
 
 ### Test using Postman
 
