@@ -80,7 +80,7 @@ Time to code! Let's create a new Azure Function Using [Visual Studio Code](https
 
 ### Sample Code
 
-You can view a sample function completed code in the "[AzureFunction/LobeSquirrelDetectorFunction/](AzureFunction/LobeSquirrelDetectorFunction/)" directory in this repository.
+You can view a sample function completed code in the "[AzureFunction/AzureMLSquirrelDetectorFunction/](AzureFunction/AzureMLSquirrelDetectorFunction/)" directory in this repository.
 
 
 ## Testing the sample
@@ -94,8 +94,6 @@ Curl is a command line tool that allows you to send HTTP requests to a server. I
 ```bash
 ❯ curl http://localhost:7071/api/LobeSquirrelDetectorFunction -Method 'Post' -InFile 01.jpg
 ```
-
-<img src="img/TestUsingCurl.jpg" width="450"/>
 
 
 ### Test using Postman
