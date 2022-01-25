@@ -35,101 +35,18 @@ Here is the model performing live recognition in action:
 <img src="img/LobeTestImage.gif" width="650"/>
 
 
-## Exporting the model to TensorFlow
+## Exporting the model to ML.Net
 
-Once the project  was trained, you can export it to several formats. We will use a TensorFlow format for the Azure Function. 
+Once the project  was trained, you can export it to several formats. 
 
 <img src="img/LobeExportModel.jpg" width="450"/>
 
-The exported model has several files. The following list shows the files that we use in our Azure Function:
-
-- labels.txt: The labels that the model recognizes
-- saved_model.pb: The model definition
-- signature.json: The model signature
-- example/tf_example.py.py: sample python code that uses the exported model.
-
-You can check the exported model in the "[Lobe/ExportedModel](Lobe/ExportedModel/)" directory in this repository.
 
 ## Azure Function
 
 Time to code! Let's create a new Azure Function Using [Visual Studio Code](https://code.visualstudio.com/) and the [Azure Functions for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) extension. 
 
 
-### Changes to `__ init __.py`
-The following code is the final code for the `__ init __.py` file in the Azure Function.
-
-A couple of notes:
-
-- The function will receive a POST request with the file bytes in the body.
-- In order to use the `tf_model_helper` file, we must import the `tf_model_helper.py` function from the `tf_model_helper.py` file using ".tf_model_helper"
-- `ASSETS_PATH` and `TF_MODEL` are the variables that we will use to access the exported model. We will use os.path to resolve the current path to the exported model.
-- The result of the function will be a JSON string with the prediction. Jsonify will convert the TF_Model() image prediction to a JSON string.
-
-
-```python
-import logging
-import azure.functions as func
-
-# Imports for image procesing
-import io
-import os
-from PIL import Image
-from flask import Flask, jsonify
-
-# Imports for prediction
-from .tf_model_helper import TFModel
-
-def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
-
-    results = "{}"
-    try:
-        # get and load image from POST
-        image_bytes = req.get_body()    
-        image = Image.open(io.BytesIO(image_bytes))
-
-        # Load and intialize the model and the app context
-        app = Flask(__name__)  
-
-        # load LOBE Model using the current directory
-        scriptpath = os.path.abspath(__file__)
-        scriptdir  = os.path.dirname(scriptpath)
-        ASSETS_PATH = os.path.join(scriptdir, "model")
-        TF_MODEL = TFModel(ASSETS_PATH)
-
-        with app.app_context():        
-            # prefict image and process results in json string format
-            results = TF_MODEL.predict(image)            
-            jsonresult = jsonify(results)
-            jsonStr = jsonresult.get_data(as_text=True)
-            results = jsonStr
-
-    except Exception as e:
-        logging.info(f'exception: {e}')
-        pass 
-
-    # return results
-    logging.info('Image processed. Results: ' + results)
-    return func.HttpResponse(results, status_code=200)
-```
-
-### Changes to `requirements.txt`
-
-The `requirements.txt` file will define the necessary libraries for the Azure Function. We will use the following libraries:
-
-```text
-# DO NOT include azure-functions-worker in this file
-# The Python Worker is managed by Azure Functions platform
-# Manually managing azure-functions-worker may cause unexpected issues
-
-azure-functions
-requests
-Pillow
-numpy
-flask
-tensorflow
-opencv-python
-```
 
 ### Sample Code
 
@@ -171,15 +88,18 @@ We are now ready to test our function in Azure Functions. To do so we need to de
 
 You can check a session recording about this topic in English and Spanish.
 
-- Eng - [Computer Vision using LOBE running on Azure Functions](https://www.meetup.com/Microsoft-Reactor-Toronto/events/283031778/)
+- Eng - [Coming soon](https://aka.ms/ServerlesssinJan1.25)
 - Spa - [Coming soon](https://aka.ms/ServerlesssinJan1.11)
 
 These links will help to understand specific implementations of the sample code:
 
+- [Microsoft Docs - Azure Machine Learning](https://aka.ms/WhatisAzureML-ci)
+- [Microsoft Learn - Microsoft Azure AI Fundamentals: Explore visual tools for machine learning](https://aka.ms/VisualToolsforML-ci)
+lobe-export)
+- [Microsoft Learn - Build and operate machine learning solutions with Azure Machine Learning](https://aka.ms/OperateMLSolutions-ci)
 - [Microsoft Learn - Create serverless applications](https://aka.ms/CreateServerlessApps-ci)
-- [AZ-204: Implement Azure Functions](https://aka.ms/AzureFunctions-ci)
-- [Microsoft Docs - Overview of image classification model by Lobe (preview)](https://docs.microsoft.com/en-us/ai-builder/lobe-overview)
-- [Microsoft Docs - Export your image classification model from Lobe to AI Builder (preview)](https://docs.microsoft.com/en-us/ai-builder/lobe-export)
+- [Microsoft Docs - AZ-204: Implement Azure Functions](https://aka.ms/AzureFunctions-ci)
+- [Microsoft Learn - Connect your services together](https://aka.ms/ConnectServicesTogether-ci)
 
 In my personal blog "[ElBruno.com](https://elbruno.com)", I wrote about several scenarios on how to work and code with [LOBE](https://elbruno.com/tag/lobe/). 
 
@@ -196,7 +116,7 @@ In my personal blog "[ElBruno.com](https://elbruno.com)", I wrote about several 
 
 Contributions, issues and feature requests are welcome!
 
-Feel free to check [issues page](https://github.com/elbruno/LobeAndAzureFunctions/issues).
+Feel free to check [issues page](https://github.com/elbruno/AzureMLAndAzureFunctions/issues).
 
 ## Show your support
 
