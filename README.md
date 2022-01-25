@@ -42,7 +42,7 @@ Once you select the **Image Classification** scenario, you can use the images in
 
 Here is the model performing live recognition in action: 
 
-<img src="img/LobeTestImage.gif" width="650"/>
+<img src="img/MLNetModelTrainedTestImages.gif" width="650"/>
 
 
 ## Exporting the model to ML.Net
