@@ -47,15 +47,35 @@ Here is the model performing live recognition in action:
 
 ## Exporting the model to ML.Net
 
-Once the project  was trained, you can export it to several formats. 
+Once the project  was trained, you can export it to several formats. ML.Net supports exporting to popular formats, such as ONNX. For this scenario we will use the standard ZIP file that represent our model.
 
-**Work In Progress**
-<img src="img/UPDATE.jpg" width="450"/>
+<img src="img/ModelBuilderIncludeModel.jpg" width="450"/>
 
+
+Once we train a model using Model Builder, we can find the following files:
+
+- `mlnetSquirrels.mbconfig`. This file represents the model configuration.
+- `mlnetSquirrels.zip`. This file represents the generated model.
+- `mlnetSquirrels.consumption.cs`. This file include classes to work with the model. Including Model Input, Model Output, and Model Predictor.
+- `mlnetSquirrels.training.cs`. This file include classes to retrain the model.
+
+The following C# code, is a sample of how to use the model:
+
+```csharp
+//Load sample data
+var imageBytes = File.ReadAllBytes(@"C:\testdata\Space Wolf\test01.jpg");
+MlnetSquirrels.ModelInput sampleData = new MlnetSquirrels.ModelInput()
+{
+    ImageSource = imageBytes,
+};
+
+//Load model and predict output
+var result = MlnetSquirrels.Predict(sampleData);
+```
 
 ## Azure Function
 
-Time to code! Let's create a new Azure Function Using [Visual Studio Code](https://code.visualstudio.com/) and the [Azure Functions for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) extension. 
+Time to code! Let's create a new Azure Function Using [Visual Studio Code](https://code.visualstudio.com/) and the [Azure Functions for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azurefunctions) extension. For this specific scenario we will create a C# function that will run the model and return the result.
 
 
 ### Sample Code
